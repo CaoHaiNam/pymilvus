@@ -176,6 +176,46 @@ class Role:
             self._name, object, object_name, privilege, db_name
         )
 
+    def grant_v2(self, privilege: str, db_name: str, collection_name: str):
+        """Grant a privilege for the role
+            :param privilege: privilege name.
+            :type  privilege: str
+            :param db_name: db name.
+            :type  db_name: str
+            :param collection_name: collection name.
+            :type  collection_name: str
+
+        :example:
+            >>> from pymilvus import connections
+            >>> from pymilvus.orm.role import Role
+            >>> connections.connect()
+            >>> role = Role(role_name)
+            >>> role.grant_v2("Insert", db_name, collection_name)
+        """
+        return self._get_connection().grant_privilege_v2(
+            self._name, privilege, db_name, collection_name
+        )
+
+    def revoke_v2(self, privilege: str, db_name: str, collection_name: str):
+        """Revoke a privilege for the role
+            :param privilege: privilege name.
+            :type  privilege: str
+            :param db_name: db name.
+            :type  db_name: str
+            :param collection_name: collection name.
+            :type  collection_name: str
+
+        :example:
+            >>> from pymilvus import connections
+            >>> from pymilvus.orm.role import Role
+            >>> connections.connect()
+            >>> role = Role(role_name)
+            >>> role.revoke_v2("Insert", db_name, collection_name)
+        """
+        return self._get_connection().revoke_privilege_v2(
+            self._name, privilege, db_name, collection_name
+        )
+
     def list_grant(self, object: str, object_name: str, db_name: str = ""):
         """List a grant info for the role and the specific object
             :param object: object type.
@@ -221,3 +261,82 @@ class Role:
             >>> role.list_grants()
         """
         return self._get_connection().select_grant_for_one_role(self._name, db_name)
+
+    def create_privilege_group(self, privilege_group: str):
+        """Create a privilege group for the role
+            :param privilege_group: privilege group name.
+            :type  privilege_group: str
+
+        :example:
+            >>> from pymilvus import connections
+            >>> from pymilvus.orm.role import Role
+            >>> connections.connect()
+            >>> role = Role(role_name)
+            >>> role.create_privilege_group(privilege_group="privilege_group")
+        """
+        return self._get_connection().create_privilege_group(privilege_group)
+
+    def drop_privilege_group(self, privilege_group: str):
+        """Drop a privilege group for the role
+            :param privilege_group: privilege group name.
+            :type  privilege_group: str
+
+        :example:
+            >>> from pymilvus import connections
+            >>> from pymilvus.orm.role import Role
+            >>> connections.connect()
+            >>> role = Role(role_name)
+            >>> role.drop_privilege_group(privilege_group="privilege_group")
+        """
+        return self._get_connection().drop_privilege_group(privilege_group)
+
+    def list_privilege_groups(self):
+        """List all privilege groups for the role
+            :return a PrivilegeGroupInfo object
+            :rtype PrivilegeGroupInfo
+
+            PrivilegeGroupInfo groups:
+            - PrivilegeGroupItem: <group_name:group1>, <privileges:['Insert', 'Select']>
+
+        :example:
+            >>> from pymilvus import connections
+            >>> from pymilvus.orm.role import Role
+            >>> connections.connect()
+            >>> role = Role(role_name)
+            >>> role.list_privilege_groups()
+        """
+        return self._get_connection().list_privilege_groups()
+
+    def add_privileges_to_group(self, privilege_group: str, privileges: list):
+        """Add privileges to a privilege group for the role
+            :param privilege_group: privilege group name.
+            :type  privilege_group: str
+            :param privileges: a list of privilege names.
+            :type  privileges: list
+
+        :example:
+            >>> from pymilvus import connections
+            >>> from pymilvus.orm.role import Role
+            >>> connections.connect()
+            >>> role = Role(role_name)
+            >>> role.add_privileges_to_group(privilege_group="privilege_group",
+            >>>     privileges=["Insert","Select"])
+        """
+        return self._get_connection().add_privileges_to_group(privilege_group, privileges)
+
+    def remove_privileges_from_group(self, privilege_group: str, privileges: list):
+        """Remove privileges from a privilege group for the role
+            :param privilege_group: privilege group name.
+            :type  privilege_group: str
+            :param privileges: a list of privilege names.
+            :type  privileges: list
+
+        :example:
+            >>> from pymilvus import connections
+            >>> from pymilvus.orm.role import Role
+            >>> connections.connect()
+            >>> role = Role(role_name)
+            >>> role.remove_privileges_from_group(privilege_group="privilege_group",
+            >>>     privileges=["Insert","Select"])
+        """
+        return self._get_connection().remove_privileges_from_group(privilege_group, privileges)

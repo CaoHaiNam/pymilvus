@@ -1462,6 +1462,32 @@ class Prepare:
         )
 
     @classmethod
+    def operate_privilege_v2_request(
+        cls,
+        role_name: str,
+        privilege: str,
+        operate_privilege_type: Any,
+        db_name: str,
+        collection_name: str,
+    ):
+        check_pass_param(
+            role_name=role_name,
+            privilege=privilege,
+            operate_privilege_type=operate_privilege_type,
+            db_name=db_name,
+            collection_name=collection_name,
+        )
+        return milvus_types.OperatePrivilegeV2Request(
+            role=milvus_types.RoleEntity(name=role_name),
+            grantor=milvus_types.GrantorEntity(
+                privilege=milvus_types.PrivilegeEntity(name=privilege)
+            ),
+            type=operate_privilege_type,
+            db_name=db_name,
+            collection_name=collection_name,
+        )
+
+    @classmethod
     def select_grant_request(cls, role_name: str, object: str, object_name: str, db_name: str):
         check_pass_param(role_name=role_name)
         if object:
@@ -1590,33 +1616,28 @@ class Prepare:
         return milvus_types.DescribeDatabaseRequest(db_name=db_name)
 
     @classmethod
-    def create_privilege_group_req(cls, group_name: str):
-        check_pass_param(group_name=group_name)
-        return milvus_types.CreatePrivilegeGroupRequest(group_name=group_name)
+    def create_privilege_group_req(cls, privilege_group: str):
+        check_pass_param(privilege_group=privilege_group)
+        return milvus_types.CreatePrivilegeGroupRequest(group_name=privilege_group)
 
     @classmethod
-    def drop_privilege_group_req(cls, group_name: str):
-        check_pass_param(group_name=group_name)
-        return milvus_types.DropPrivilegeGroupRequest(group_name=group_name)
+    def drop_privilege_group_req(cls, privilege_group: str):
+        check_pass_param(privilege_group=privilege_group)
+        return milvus_types.DropPrivilegeGroupRequest(group_name=privilege_group)
 
     @classmethod
     def list_privilege_groups_req(cls):
         return milvus_types.ListPrivilegeGroupsRequest()
 
     @classmethod
-    def operate_privilege_group_req(cls, group_name: str, privileges: List[str], operate_type: Any):
-        check_pass_param(group_name=group_name)
-        check_pass_param(operate_type=operate_type)
-        if not isinstance(
-            privileges,
-            (list),
-        ):
-            msg = f"Privileges {privileges} is not a list"
-            raise ParamError(message=msg)
-        for p in privileges:
-            check_pass_param(privilege=p)
+    def operate_privilege_group_req(
+        cls, privilege_group: str, privileges: List[str], operate_privilege_group_type: Any
+    ):
+        check_pass_param(privilege_group=privilege_group)
+        check_pass_param(privileges=privileges)
+        check_pass_param(operate_privilege_group_type=operate_privilege_group_type)
         return milvus_types.OperatePrivilegeGroupRequest(
-            group_name=group_name,
+            group_name=privilege_group,
             privileges=[milvus_types.PrivilegeEntity(name=p) for p in privileges],
-            type=operate_type,
+            type=operate_privilege_group_type,
         )
